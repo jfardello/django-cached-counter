@@ -10,7 +10,7 @@ Usage
 models.py
 
     from django.db import models
-    from cached_counters.counters import Counter
+    from cached_counter.counters import Counter
 
     class Album(models.Model):
         photo_count = Counter("get_photo_count")
