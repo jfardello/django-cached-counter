@@ -15,8 +15,8 @@ models.py
     class Album(models.Model):
         photo_count = Counter("get_photo_count")
 
-    def get_photo_count(self):
-        return self.photo_set.count()
+        def get_photo_count(self):
+            return self.photo_set.count()
 
 getting and updating the counter
 
