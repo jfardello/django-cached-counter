@@ -2,7 +2,7 @@ from django.utils import unittest
 from .models import Thread, Message
 
 
-class WebDAVStorageTest(unittest.TestCase):
+class CounterTest(unittest.TestCase):
     def setUp(self):
         thread = Thread.objects.create()
 
