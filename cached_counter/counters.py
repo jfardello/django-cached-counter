@@ -2,6 +2,7 @@ from django.core.cache import get_cache
 from django.db.models.signals import post_init
 from django.utils.encoding import smart_str
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 cache = get_cache(getattr(settings, 'COUNTER_CACHE_BACKEND', 'default'))
 
@@ -14,6 +15,7 @@ class BaseCounter(object):
 
 
 class CachedCounter(BaseCounter):
+
     def __init__(self, instance, name, count_method, cache_timeout=None, use_instance_cache=True):
         self.instance = instance
         self.name = name
@@ -117,6 +119,8 @@ class CachedCounter(BaseCounter):
 
 
 class Counter(object):
+    serialize = True
+
     def __init__(self, *args, **kwargs):
         self.counter_cls = kwargs.pop("counter_class", CachedCounter)
         self.counter_args = args
@@ -125,6 +129,8 @@ class Counter(object):
     def contribute_to_class(self, cls, name):
         "This method is based on the django GenericForeignKey.contribute_to_class"
         self.name = name
+        self.attname = name
+        self.rel = False
         self.model = cls
         self.instance_counter_attr = "_%s_counter" % name
         cls._meta.add_virtual_field(self)
@@ -155,3 +161,12 @@ class Counter(object):
         elif not isinstance(value, BaseCounter):
             value_class_name = getattr(type(value), "__name__", "unknown")
             raise ValueError(u"%s instance can't be set to Counter. Use int or long." % value_class_name)
+
+    def to_python(self, value):
+        if isinstance(value, CachedCounter):
+            return value
+        try:
+            return int(value)
+        except ValueError:
+            raise ValidationError('Invalid input for a counter instance.')
+
