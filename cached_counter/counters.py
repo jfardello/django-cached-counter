@@ -1,7 +1,9 @@
-from django.core.cache import cache
+from django.core.cache import get_cache
 from django.db.models.signals import post_init
 from django.utils.encoding import smart_str
 from django.conf import settings
+
+cache = get_cache(getattr(settings, 'COUNTER_CACHE_BACKEND', 'default'))
 
 
 DEFAULT_COUNTER_CACHE_TIMEOUT = 86400  # 24 hours
