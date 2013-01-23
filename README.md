@@ -31,3 +31,10 @@ getting and updating the counter
 
     # using counter in django templates
     {{ album.photo_count }}
+
+ModelForm helper, that works on virtual fields, useful on perdurable cache backeds, such as django-redis.
+
+
+    from cached_counter.counters import virtual_factory
+
+    AlbumForm = virtual_factory(Album)

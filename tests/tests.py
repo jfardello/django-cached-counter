@@ -1,5 +1,6 @@
 from django.utils import unittest
 from .models import Thread, Message
+from .forms import ThreadForm, ThreadForm2
 
 
 class CounterTest(unittest.TestCase):
@@ -62,3 +63,20 @@ class CounterTest(unittest.TestCase):
         cache.incr(counter.cache_key, 5)
 
         self.assertEqual(int(counter), 15)
+
+    def test_forms(self):
+        self.thread.messages_counter_from_prop = 88
+        self.thread.save()
+        post = {'messages_counter_from_prop': 33,
+                'messages_counter_from_method':66,
+                'messages_counter_without_local_cache':99}
+        form = ThreadForm(post)
+        form2 = ThreadForm2(post, instance=self.thread)
+
+        #lets see if the form correctly loads the instance values
+        self.assertEqual(int(form2.initial['messages_counter_from_prop']), 88)
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form2.is_valid())
+        form2.save()
+
+
